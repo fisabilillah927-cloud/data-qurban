@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="id" class="scroll-smooth overflow-x-clip">
+<html lang="id" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <title>QurbanKu - Perencana & Tracker Tabungan Qurban</title>
 
     <!-- Google Fonts: Plus Jakarta Sans (Modern UX) & Amiri (Kaligrafi Islami) -->
@@ -65,17 +65,6 @@
     </script>
 
     <style>
-      /* Cegah zoom otomatis input di HP & jaga lebar presisi sesuai layar */
-      html, body {
-        max-width: 100vw;
-        overflow-x: clip;
-        -webkit-text-size-adjust: 100%;
-      }
-
-      *, *::before, *::after {
-        box-sizing: border-box;
-      }
-
       /* Geometri Islami Latar Belakang Hero */
       .islamic-pattern {
         background-color: #064e3b;
@@ -98,13 +87,6 @@
       /* Native Touch Optimizations */
       button, a, input, select {
         touch-action: manipulation;
-        max-width: 100%;
-      }
-
-      @media (max-width: 639px) {
-        input, select, textarea {
-          font-size: 16px !important;
-        }
       }
 
       /* Custom Smooth Scrollbar */
@@ -157,7 +139,7 @@
       }
     </style>
   </head>
-  <body data-device-type="PC" data-device-brand="Umum" class="bg-slate-50 text-slate-800 antialiased selection:bg-emerald-600 selection:text-white min-h-screen w-full max-w-full overflow-x-clip flex flex-col">
+  <body data-device-type="PC" data-device-brand="Umum" class="bg-slate-50 text-slate-800 antialiased selection:bg-emerald-600 selection:text-white min-h-screen flex flex-col">
 
     <!-- ==================== NOTIFIKASI TOAST CONTAINER ==================== -->
     <div id="toast-container" class="fixed top-4 left-4 right-4 sm:left-auto sm:right-5 z-50 flex flex-col gap-2 pointer-events-none sm:max-w-md w-auto"></div>
@@ -228,20 +210,20 @@
     </div>
 
     <!-- ==================== HEADER RESPONSIF ==================== -->
-    <header class="sticky top-0 z-40 w-full max-w-full bg-white/95 backdrop-blur-md border-b border-emerald-100 shadow-sm no-print">
-      <div class="max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16 gap-2">
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-emerald-100 shadow-sm no-print">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
           
           <!-- Brand Logo -->
-          <div class="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-emerald-700 to-emerald-900 flex items-center justify-center text-gold-400 shadow-md shrink-0">
-              <i class="fa-solid fa-kaaba text-base sm:text-lg"></i>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-700 to-emerald-900 flex items-center justify-center text-gold-400 shadow-md shrink-0">
+              <i class="fa-solid fa-kaaba text-lg"></i>
             </div>
-            <div class="truncate">
-              <span class="font-extrabold text-base sm:text-xl tracking-tight text-emerald-900">
+            <div>
+              <span class="font-extrabold text-lg sm:text-xl tracking-tight text-emerald-900">
                 Qurban<span class="text-gold-600">Ku</span>
               </span>
-              <span class="hidden xs:inline-block sm:inline-block text-[10px] sm:text-[11px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full ml-1 sm:ml-2 border border-emerald-200">
+              <span class="inline-block text-[10px] sm:text-[11px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full ml-1 sm:ml-2 border border-emerald-200">
                 1448 H / 2027
               </span>
               <span id="device-profile-badge" class="hidden xl:inline-flex items-center gap-1.5 text-[10px] font-bold bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-full ml-1.5 border border-slate-200" title="Perangkat terdeteksi otomatis">
@@ -253,25 +235,25 @@
 
           <!-- Navigasi Desktop (>= 768px) -->
           <nav class="hidden md:flex items-center gap-5 text-sm font-semibold text-slate-600">
-            <a href="#pilih-hewan" class="hover:text-emerald-700 transition py-2 whitespace-nowrap">Target Hewan</a>
-            <a href="#tracker-tabungan" class="hover:text-emerald-700 transition py-2 whitespace-nowrap">Tracker & Grafik</a>
-            <a href="#patungan-sapi" class="hover:text-emerald-700 transition py-2 whitespace-nowrap">Patungan 1/7</a>
-            <a href="#panduan-qurban" class="hover:text-emerald-700 transition py-2 whitespace-nowrap">Panduan Qurban</a>
+            <a href="#pilih-hewan" class="hover:text-emerald-700 transition py-2">Target Hewan</a>
+            <a href="#tracker-tabungan" class="hover:text-emerald-700 transition py-2">Tracker & Grafik</a>
+            <a href="#patungan-sapi" class="hover:text-emerald-700 transition py-2">Patungan 1/7</a>
+            <a href="#panduan-qurban" class="hover:text-emerald-700 transition py-2">Panduan Qurban</a>
           </nav>
 
           <!-- Action Buttons -->
-          <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <button type="button" onclick="exportReport()" title="Cetak Laporan Tabungan" class="min-h-[40px] flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-semibold border border-emerald-200 transition">
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="exportReport()" title="Cetak Laporan Tabungan" class="min-h-[40px] flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-semibold border border-emerald-200 transition">
               <i class="fa-solid fa-print text-emerald-600"></i>
               <span class="hidden sm:inline">Laporan</span>
             </button>
-            <button type="button" onclick="confirmResetDemo()" title="Reset Data Demo" class="min-h-[40px] flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 text-xs sm:text-sm font-semibold border border-slate-200 transition">
+            <button type="button" onclick="confirmResetDemo()" title="Reset Data Demo" class="min-h-[40px] flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 text-xs sm:text-sm font-semibold border border-slate-200 transition">
               <i class="fa-solid fa-rotate-left"></i>
               <span class="hidden lg:inline">Reset</span>
             </button>
 
             <!-- Hamburger Button (< 768px) -->
-            <button type="button" id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden min-h-[40px] w-10 flex items-center justify-center rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition focus:outline-none shrink-0" aria-label="Buka Menu">
+            <button type="button" id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden min-h-[40px] w-10 flex items-center justify-center rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition focus:outline-none" aria-label="Buka Menu">
               <i class="fa-solid fa-bars text-lg" id="mobile-menu-icon"></i>
             </button>
           </div>
@@ -296,14 +278,14 @@
     </header>
 
     <!-- ==================== HERO & WIDGET UTAMA BERANDA ==================== -->
-    <section class="relative islamic-pattern text-white overflow-x-clip w-full max-w-full shrink-0">
+    <section class="relative islamic-pattern text-white overflow-hidden shrink-0">
       <div class="absolute inset-0 bg-gradient-to-br from-emerald-950/95 via-emerald-900/90 to-emerald-800/85"></div>
       
-      <div class="relative max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-10">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-center w-full">
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
           
           <!-- Widget Salat & Countdown -->
-          <div class="lg:col-span-7 space-y-4 min-w-0">
+          <div class="lg:col-span-7 space-y-4">
             
             <!-- Widget Lokasi & Waktu Sholat Card (Gaya App Islami) -->
             <div class="bg-emerald-950/80 backdrop-blur-md border border-emerald-700/60 rounded-3xl p-4 sm:p-5 shadow-xl">
@@ -438,7 +420,7 @@
     </section>
 
     <!-- ==================== MAIN CONTENT CONTAINER ==================== -->
-    <main class="max-w-7xl w-full max-w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-10 space-y-7 sm:space-y-12 flex-1 overflow-x-clip">
+    <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 sm:space-y-12 flex-1">
       
       <!-- ==================== 3. QUICK ACTION BAR GRID ==================== -->
       <section class="no-print">
@@ -540,7 +522,7 @@
         </div>
 
         <!-- Horizontal Snap Scroll di HP / Grid 2 Kolom Simetris di Tablet & PC -->
-        <div class="flex sm:grid sm:grid-cols-2 gap-3 sm:gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory w-full sm:px-0 pb-2" id="animal-cards-container">
+        <div class="flex sm:grid sm:grid-cols-2 gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0 pb-2" id="animal-cards-container">
           <!-- Di-render via JS -->
         </div>
 
@@ -587,10 +569,10 @@
             </div>
 
             <!-- Horizontal Snap Scroll di HP / Grid 3 Kolom di Tablet & PC -->
-            <div class="flex md:grid md:grid-cols-3 gap-3 sm:gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory w-full md:px-0 pt-5">
+            <div class="flex md:grid md:grid-cols-3 gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory -mx-5 px-5 md:mx-0 md:px-0 pt-5">
               
               <!-- Harian -->
-              <div class="snap-center shrink-0 w-[78vw] max-w-[300px] sm:w-[58vw] md:max-w-none md:w-auto bg-white/10 backdrop-blur-sm border border-emerald-700/70 rounded-2xl p-4 flex flex-col justify-between">
+              <div class="snap-center shrink-0 w-[82vw] sm:w-[60vw] md:w-auto bg-white/10 backdrop-blur-sm border border-emerald-700/70 rounded-2xl p-4 flex flex-col justify-between">
                 <div>
                   <div class="flex items-center justify-between mb-2">
                     <span class="text-xs font-bold uppercase tracking-wider text-emerald-300">Opsi 1 • Harian</span>
@@ -603,7 +585,7 @@
               </div>
 
               <!-- Mingguan -->
-              <div class="snap-center shrink-0 w-[78vw] max-w-[300px] sm:w-[58vw] md:max-w-none md:w-auto bg-white/10 backdrop-blur-sm border-2 border-gold-400/70 rounded-2xl p-4 relative flex flex-col justify-between">
+              <div class="snap-center shrink-0 w-[82vw] sm:w-[60vw] md:w-auto bg-white/10 backdrop-blur-sm border-2 border-gold-400/70 rounded-2xl p-4 relative flex flex-col justify-between">
                 <span class="absolute -top-2.5 right-4 bg-gold-500 text-emerald-950 text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full">Populer</span>
                 <div>
                   <div class="flex items-center justify-between mb-2">
@@ -617,7 +599,7 @@
               </div>
 
               <!-- Bulanan -->
-              <div class="snap-center shrink-0 w-[78vw] max-w-[300px] sm:w-[58vw] md:max-w-none md:w-auto bg-white/10 backdrop-blur-sm border border-emerald-700/70 rounded-2xl p-4 flex flex-col justify-between">
+              <div class="snap-center shrink-0 w-[82vw] sm:w-[60vw] md:w-auto bg-white/10 backdrop-blur-sm border border-emerald-700/70 rounded-2xl p-4 flex flex-col justify-between">
                 <div>
                   <div class="flex items-center justify-between mb-2">
                     <span class="text-xs font-bold uppercase tracking-wider text-emerald-300">Opsi 3 • Bulanan</span>
@@ -758,8 +740,8 @@
                 </div>
               </div>
 
-              <div class="overflow-x-auto w-full max-w-full">
-                <table class="w-full text-left border-collapse min-w-[420px]">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[460px]">
                   <thead>
                     <tr class="border-b border-slate-200 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                       <th class="py-2 px-2">Tanggal</th>
@@ -860,7 +842,7 @@
           </div>
 
           <!-- Horizontal Snap Scroll di HP / Grid 4 Kolom di PC -->
-          <div id="patungan-slots-grid" class="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-3.5 overflow-x-auto no-scrollbar snap-x snap-mandatory w-full sm:px-0 pb-2">
+          <div id="patungan-slots-grid" class="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 overflow-x-auto no-scrollbar snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0 pb-2">
             <!-- Di-render via JS -->
           </div>
 
@@ -1359,7 +1341,7 @@
             return `
               <div
                 onclick="selectAnimal('${animal.id}')"
-                class="snap-center shrink-0 w-[80vw] max-w-[320px] sm:max-w-none sm:w-auto cursor-pointer rounded-2xl p-4 sm:p-5 transition-all border-2 ${
+                class="snap-center shrink-0 w-[85vw] sm:w-auto cursor-pointer rounded-2xl p-4 sm:p-5 transition-all border-2 ${
                   isSelected ? "bg-white border-emerald-600 shadow-md ring-2 ring-emerald-500/20" : "bg-white border-slate-200 hover:border-emerald-300"
                 }"
               >
@@ -2031,7 +2013,7 @@
             const bagianNumber = (idx % 7) + 1;
 
             return `
-              <div class="snap-center shrink-0 w-[76vw] max-w-[290px] sm:max-w-none sm:w-auto rounded-2xl border p-3.5 flex flex-col justify-between ${
+              <div class="snap-center shrink-0 w-[75vw] sm:w-auto rounded-2xl border p-3.5 flex flex-col justify-between ${
                 isLunas ? "bg-emerald-50/70 border-emerald-300" : "bg-white border-slate-200"
               }">
                 <div>
