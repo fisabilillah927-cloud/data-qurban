@@ -2,7 +2,7 @@
 <html lang="id" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=10.0, user-scalable=yes" />
     <title>QurbanKu - Perencana & Tracker Tabungan Qurban</title>
 
     <!-- Google Fonts: Plus Jakarta Sans (Modern UX) & Amiri (Kaligrafi Islami) -->
@@ -89,10 +89,8 @@
         touch-action: manipulation;
       }
 
-      /* Custom Smooth Scrollbar */
-      ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
+      html, body {
+        touch-action: auto pinch-zoom;
       }
       ::-webkit-scrollbar-track {
         background: #f1f5f9;
@@ -119,9 +117,27 @@
         .shadow-lg, .shadow-md, .shadow-xl, .shadow-2xl { box-shadow: none !important; border: 1px solid #cbd5e1 !important; }
         header, footer, nav { display: none !important; }
       }
+
+      /* Penyesuaian visual spesifik jenis & merek perangkat */
+      body[data-device-type="HP"] .device-card-pad {
+        padding: 0.9rem;
+      }
+      body[data-device-type="Tablet"] .device-card-pad {
+        padding: 1.25rem;
+      }
+      body[data-device-type="Laptop"] .device-card-pad,
+      body[data-device-type="PC"] .device-card-pad {
+        padding: 1.5rem;
+      }
+      body[data-device-brand="Apple"] .device-accent-ring {
+        box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.35);
+      }
+      body[data-device-brand="Samsung"] .device-accent-ring {
+        box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.28);
+      }
     </style>
   </head>
-  <body class="bg-slate-50 text-slate-800 antialiased selection:bg-emerald-600 selection:text-white min-h-screen flex flex-col">
+  <body data-device-type="PC" data-device-brand="Umum" class="bg-slate-50 text-slate-800 antialiased selection:bg-emerald-600 selection:text-white min-h-screen flex flex-col">
 
     <!-- ==================== NOTIFIKASI TOAST CONTAINER ==================== -->
     <div id="toast-container" class="fixed top-4 left-4 right-4 sm:left-auto sm:right-5 z-50 flex flex-col gap-2 pointer-events-none sm:max-w-md w-auto"></div>
@@ -173,8 +189,11 @@
               <option value="Transfer Bank (BSI)">Transfer Bank (BSI)</option>
               <option value="E-Wallet / QRIS">E-Wallet / QRIS</option>
               <option value="Setoran Tunai">Setoran Tunai</option>
-              <option value="Autodebet / Gajian">Autodebet / Gajian</option>
             </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Orang / Penyetor *</label>
+            <input type="text" id="edit-deposit-person" required placeholder="Nama penyetor" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Catatan</label>
@@ -204,6 +223,10 @@
               </span>
               <span class="inline-block text-[10px] sm:text-[11px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full ml-1 sm:ml-2 border border-emerald-200">
                 1448 H / 2027
+              </span>
+              <span id="device-profile-badge" class="hidden xl:inline-flex items-center gap-1.5 text-[10px] font-bold bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-full ml-1.5 border border-slate-200" title="Perangkat terdeteksi otomatis">
+                <i id="device-profile-icon" class="fa-solid fa-desktop text-emerald-600"></i>
+                <span id="device-profile-text">PC • Umum</span>
               </span>
             </div>
           </div>
@@ -493,11 +516,11 @@
             <span class="text-xs font-bold uppercase tracking-wider text-gold-600">Langkah 1 • Tentukan Target</span>
             <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-0.5">Pilih Target Hewan Qurban</h2>
           </div>
-          <p class="text-xs text-slate-500">Usap ke samping pada layar HP untuk melihat semua opsi.</p>
+          <p class="text-xs text-slate-500">Hanya tersedia Domba / Kambing dan Sapi 1/7. Nominal dapat langsung diedit.</p>
         </div>
 
-        <!-- Horizontal Snap Scroll di HP / Grid Simetris di Tablet & PC -->
-        <div class="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0 pb-2" id="animal-cards-container">
+        <!-- Horizontal Snap Scroll di HP / Grid 2 Kolom Simetris di Tablet & PC -->
+        <div class="flex sm:grid sm:grid-cols-2 gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0 pb-2" id="animal-cards-container">
           <!-- Di-render via JS -->
         </div>
 
@@ -581,7 +604,7 @@
                     <span class="w-7 h-7 rounded-lg bg-emerald-800 text-gold-400 flex items-center justify-center text-xs"><i class="fa-solid fa-calendar-days"></i></span>
                   </div>
                   <div class="text-xl font-extrabold text-white" id="plan-monthly">Rp 0</div>
-                  <p class="text-[11px] text-emerald-200 mt-1">Selama <span id="plan-months-count" class="font-semibold text-white">0</span> bulan (saat gajian)</p>
+                  <p class="text-[11px] text-emerald-200 mt-1">Selama <span id="plan-months-count" class="font-semibold text-white">0</span> bulan bertahap</p>
                 </div>
                 <button type="button" onclick="quickFillDeposit('monthly')" class="mt-4 min-h-[40px] w-full py-2 rounded-xl bg-emerald-700/80 hover:bg-emerald-600 text-xs font-semibold text-white border border-emerald-600 transition no-print">Gunakan Nominal Ini</button>
               </div>
@@ -609,7 +632,7 @@
                 </div>
                 <div>
                   <h3 class="font-bold text-base text-slate-900">Tambah Setoran Baru</h3>
-                  <p class="text-xs text-slate-500">Tersimpan otomatis di browser Anda</p>
+                  <p class="text-xs text-slate-500">Catat penyetor manual & otomatis perbarui riwayat</p>
                 </div>
               </div>
 
@@ -635,6 +658,11 @@
               <!-- Form Input -->
               <form id="deposit-form" class="space-y-3">
                 <div>
+                  <label for="deposit-person" class="block text-xs font-bold text-slate-700 mb-1">Nama Orang / Penyetor *</label>
+                  <input type="text" id="deposit-person" required placeholder="Ketik nama orang / penyetor..." class="w-full min-h-[42px] px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                </div>
+
+                <div>
                   <label for="deposit-amount" class="block text-xs font-bold text-slate-700 mb-1">Nominal Setoran (Rp) *</label>
                   <div class="relative">
                     <span class="absolute left-3 top-2.5 text-xs font-extrabold text-emerald-700">Rp</span>
@@ -659,7 +687,6 @@
                       <option value="Transfer Bank (BSI)">Transfer Bank (BSI)</option>
                       <option value="E-Wallet / QRIS">E-Wallet / QRIS</option>
                       <option value="Setoran Tunai">Setoran Tunai</option>
-                      <option value="Autodebet / Gajian">Autodebet / Gajian</option>
                     </select>
                   </div>
                 </div>
@@ -693,15 +720,18 @@
               </div>
             </div>
 
-            <!-- Tabel Riwayat -->
+            <!-- Tabel Riwayat Global -->
             <div id="riwayat-section" class="bg-white rounded-3xl p-4 sm:p-5 shadow-md border border-slate-200/80 scroll-mt-20">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
                 <div>
-                  <h3 class="font-bold text-base text-slate-900">Riwayat Setoran</h3>
-                  <p class="text-xs text-slate-500">Daftar transaksi yang sudah dicatat</p>
+                  <h3 class="font-bold text-base text-slate-900">Riwayat Transaksi Semua Penyetor</h3>
+                  <p class="text-xs text-slate-500">Daftar transaksi seluruh orang yang sudah dicatat</p>
                 </div>
                 <div class="flex items-center gap-2 no-print">
-                  <input type="text" id="deposit-search" oninput="renderDeposits()" placeholder="Cari..." class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 w-full sm:w-32" />
+                  <select id="deposit-person-filter" onchange="renderDeposits()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <option value="">Semua Orang</option>
+                  </select>
+                  <input type="text" id="deposit-search" oninput="renderDeposits()" placeholder="Cari nama/catatan..." class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 w-full sm:w-36" />
                   <button type="button" onclick="confirmClearAllDeposits()" title="Hapus Semua" class="min-h-[34px] px-2.5 py-1 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold border border-rose-200 transition shrink-0">
                     <i class="fa-solid fa-trash-can"></i>
                   </button>
@@ -709,10 +739,11 @@
               </div>
 
               <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse min-w-[420px]">
+                <table class="w-full text-left border-collapse min-w-[460px]">
                   <thead>
                     <tr class="border-b border-slate-200 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                       <th class="py-2 px-2">Tanggal</th>
+                      <th class="py-2 px-2">Penyetor</th>
                       <th class="py-2 px-2">Metode & Catatan</th>
                       <th class="py-2 px-2 text-right">Nominal</th>
                       <th class="py-2 px-2 text-center no-print">Aksi</th>
@@ -722,6 +753,27 @@
                     <!-- Di-render via JS -->
                   </tbody>
                 </table>
+              </div>
+            </div>
+
+            <!-- Riwayat Transaksi per Orang (Otomatis Terbarui) -->
+            <div id="riwayat-per-orang-section" class="bg-white rounded-3xl p-4 sm:p-5 shadow-md border border-emerald-200/80 scroll-mt-20">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                <div>
+                  <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">Rekap & Slot Orang</span>
+                  <h3 class="font-bold text-base text-slate-900 mt-1">Riwayat Transaksi per Orang</h3>
+                  <p class="text-xs text-slate-500">Tambah atau hapus slot orang langsung di bagiannya; nominal otomatis bertambah saat menyetor di Simpan Setoran.</p>
+                </div>
+                <div class="flex items-center gap-2 no-print">
+                  <span id="person-summary-count" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-gold-50 text-gold-800 border border-gold-200">0 Orang</span>
+                  <button type="button" onclick="addPersonSlot()" class="min-h-[36px] px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-user-plus text-gold-400"></i> Tambah Slot Orang
+                  </button>
+                </div>
+              </div>
+
+              <div id="per-person-history-container" class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                <!-- Di-render via JS -->
               </div>
             </div>
 
@@ -739,7 +791,7 @@
 
           <div class="flex items-center gap-2 no-print">
             <button type="button" onclick="addPatunganMember()" class="min-h-[38px] px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5">
-              <i class="fa-solid fa-user-plus text-gold-400"></i> Tambah Slot
+              <i class="fa-solid fa-user-plus text-gold-400"></i> Tambah Slot Patungan
             </button>
             <button type="button" onclick="confirmResetPatungan()" class="min-h-[38px] px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold border border-slate-200 transition">
               Reset Grup
@@ -752,15 +804,15 @@
           <!-- Summary Cards Patungan -->
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
             <div class="p-3 rounded-2xl bg-emerald-50/80 border border-emerald-100">
-              <span class="text-[10px] font-semibold text-emerald-700">Target Sapi Utuh</span>
+              <span class="text-[10px] font-semibold text-emerald-700">Target Sapi (<span id="patungan-cow-count-label">1 Ekor</span>)</span>
               <div id="patungan-full-cow-target" class="text-sm sm:text-base font-extrabold text-slate-900 mt-0.5">Rp 21.000.000</div>
-              <span class="text-[10px] text-slate-500">7 x <span id="patungan-per-share-target">Rp 3.000.000</span></span>
+              <span class="text-[10px] text-slate-500"><span id="patungan-total-slots-label">7 Slot</span> × <span id="patungan-per-share-target">Rp 3.000.000</span></span>
             </div>
 
             <div class="p-3 rounded-2xl bg-gold-50/80 border border-gold-200/80">
               <span class="text-[10px] font-semibold text-gold-700">Total Terkumpul</span>
               <div id="patungan-total-collected" class="text-sm sm:text-base font-extrabold text-emerald-800 mt-0.5">Rp 0</div>
-              <span id="patungan-pct-label" class="text-[10px] text-slate-600">0% dari sapi</span>
+              <span id="patungan-pct-label" class="text-[10px] text-slate-600">0% dari target</span>
             </div>
 
             <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200">
@@ -779,7 +831,7 @@
           <!-- Progress Bar -->
           <div class="mb-5">
             <div class="flex justify-between text-xs font-bold mb-1">
-              <span class="text-emerald-800">Progres Pendanaan 1 Ekor Sapi</span>
+              <span class="text-emerald-800">Progres Pendanaan Patungan Sapi</span>
               <span id="patungan-bar-pct" class="text-gold-600">0%</span>
             </div>
             <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
@@ -872,7 +924,7 @@
 
     <!-- ==================== JAVASCRIPT ==================== -->
     <script>
-      const STORAGE_KEY = "qurbanku_app_v3";
+      const STORAGE_KEY = "qurbanku_app_v4";
 
       const QUOTES_LIST = [
         {
@@ -894,47 +946,31 @@
 
       const DEFAULT_ANIMALS = [
         {
-          id: "sapi-1-7",
-          name: "Sapi 1/7 (Patungan)",
-          subtitle: "1 bagian dari 7 orang • Hemat",
-          icon: "fa-cow",
-          badge: "Patungan 1/7",
-          targetPrice: 3000000,
-        },
-        {
-          id: "kambing-std",
-          name: "Kambing / Domba Standard",
-          subtitle: "Qurban mandiri 1 orang • Umur ≥ 1 thn",
+          id: "domba-kambing",
+          name: "Domba / Kambing",
+          subtitle: "Qurban mandiri 1 orang • Umur ≥ 1 tahun & sehat",
           icon: "fa-horse-head",
-          badge: "Mandiri Standard",
+          badge: "Mandiri 1 Orang",
           targetPrice: 2500000,
         },
         {
-          id: "kambing-prem",
-          name: "Kambing / Domba Premium",
-          subtitle: "Qurban mandiri bobot besar ≥ 35kg",
-          icon: "fa-horse-head",
-          badge: "Mandiri Premium",
-          targetPrice: 3500000,
-        },
-        {
-          id: "sapi-utuh",
-          name: "Sapi Utuh (1 Ekor)",
-          subtitle: "Qurban 1 ekor penuh • Keluarga",
+          id: "sapi-1-7",
+          name: "Sapi 1/7",
+          subtitle: "1 bagian patungan dari 7 orang • Sapi umur ≥ 2 tahun",
           icon: "fa-cow",
-          badge: "1 Ekor Penuh",
-          targetPrice: 21000000,
+          badge: "Patungan 1/7",
+          targetPrice: 3000000,
         },
       ];
 
       function createDefaultPatungan(sharePrice = 3000000) {
         return [
-          { id: 1, name: "Ahmad Fauzi (Anda)", paidAmount: 1800000, targetAmount: sharePrice, note: "Cicilan 3x" },
-          { id: 2, name: "Siti Rahmawati", paidAmount: sharePrice, targetAmount: sharePrice, note: "Lunas transfer" },
-          { id: 3, name: "Budi Santoso", paidAmount: 2250000, targetAmount: sharePrice, note: "Kurang 750rb" },
-          { id: 4, name: "Hendra Wijaya", paidAmount: 1500000, targetAmount: sharePrice, note: "Setoran awal" },
-          { id: 5, name: "Nurul Hidayah", paidAmount: sharePrice, targetAmount: sharePrice, note: "Lunas" },
-          { id: 6, name: "Rizky Pratama", paidAmount: 900000, targetAmount: sharePrice, note: "Cicilan pekan 1" },
+          { id: 1, name: "Ahmad Fauzi", paidAmount: 500000, targetAmount: sharePrice, note: "Setoran awal" },
+          { id: 2, name: "Siti Rahmawati", paidAmount: 350000, targetAmount: sharePrice, note: "Setoran manual" },
+          { id: 3, name: "Budi Santoso", paidAmount: 450000, targetAmount: sharePrice, note: "Setoran tengah bulan" },
+          { id: 4, name: "Hendra Wijaya", paidAmount: 400000, targetAmount: sharePrice, note: "Setoran pekan ini" },
+          { id: 5, name: "Nurul Hidayah", paidAmount: 0, targetAmount: sharePrice, note: "Belum menyetor" },
+          { id: 6, name: "Rizky Pratama", paidAmount: 0, targetAmount: sharePrice, note: "Belum menyetor" },
           { id: 7, name: "Slot Terbuka #7", paidAmount: 0, targetAmount: sharePrice, note: "Menunggu peserta" },
         ];
       }
@@ -948,11 +984,17 @@
           selectedAnimalId: "sapi-1-7",
           currentQuoteIndex: 0,
           animals: DEFAULT_ANIMALS.map((a) => ({ ...a })),
+          personSlots: [
+            { id: "slot-1", name: "Ahmad Fauzi" },
+            { id: "slot-2", name: "Siti Rahmawati" },
+            { id: "slot-3", name: "Budi Santoso" },
+            { id: "slot-4", name: "Hendra Wijaya" },
+          ],
           deposits: [
-            { id: "dep-1", amount: 500000, date: fmt(45), method: "Transfer Bank (BSI)", note: "Setoran awal niat qurban" },
-            { id: "dep-2", amount: 350000, date: fmt(30), method: "Autodebet / Gajian", note: "Alokasi gajian bulan lalu" },
-            { id: "dep-3", amount: 450000, date: fmt(15), method: "E-Wallet / QRIS", note: "Setoran tengah bulan" },
-            { id: "dep-4", amount: 400000, date: fmt(3), method: "Transfer Bank (BSI)", note: "Setoran pekan ini" },
+            { id: "dep-1", person: "Ahmad Fauzi", amount: 500000, date: fmt(45), method: "Transfer Bank (BSI)", note: "Setoran awal niat qurban" },
+            { id: "dep-2", person: "Siti Rahmawati", amount: 350000, date: fmt(30), method: "Setoran Tunai", note: "Tabungan bulanan" },
+            { id: "dep-3", person: "Budi Santoso", amount: 450000, date: fmt(15), method: "E-Wallet / QRIS", note: "Setoran tengah bulan" },
+            { id: "dep-4", person: "Hendra Wijaya", amount: 400000, date: fmt(3), method: "Transfer Bank (BSI)", note: "Setoran pekan ini" },
           ],
           patungan: createDefaultPatungan(3000000),
         };
@@ -962,14 +1004,137 @@
       let savingsChartInstance = null;
       let countdownInterval = null;
 
+      function normalizeAnimals(rawAnimals) {
+        const map = new Map();
+        if (Array.isArray(rawAnimals)) {
+          rawAnimals.forEach((item) => {
+            if (!item || !item.id) return;
+            if (item.id === "domba-kambing" || item.id === "kambing-std") {
+              map.set("domba-kambing", {
+                id: "domba-kambing",
+                name: "Domba / Kambing",
+                subtitle: "Qurban mandiri 1 orang • Umur ≥ 1 tahun & sehat",
+                icon: "fa-horse-head",
+                badge: "Mandiri 1 Orang",
+                targetPrice: Math.max(100000, Math.round(Number(item.targetPrice) || 2500000)),
+              });
+            } else if (item.id === "sapi-1-7") {
+              map.set("sapi-1-7", {
+                id: "sapi-1-7",
+                name: "Sapi 1/7",
+                subtitle: "1 bagian patungan dari 7 orang • Sapi umur ≥ 2 tahun",
+                icon: "fa-cow",
+                badge: "Patungan 1/7",
+                targetPrice: Math.max(100000, Math.round(Number(item.targetPrice) || 3000000)),
+              });
+            }
+          });
+        }
+        return DEFAULT_ANIMALS.map((def) => map.get(def.id) || { ...def });
+      }
+
+      function ensurePersonSlotsSynced() {
+        if (!Array.isArray(appState.personSlots)) {
+          appState.personSlots = [];
+        }
+        const seen = new Set(appState.personSlots.map((s) => (s.name || "").trim().toLowerCase()).filter(Boolean));
+        appState.deposits.forEach((d) => {
+          const pName = (d.person || "").trim();
+          if (!pName) return;
+          const key = pName.toLowerCase();
+          if (!seen.has(key)) {
+            seen.add(key);
+            appState.personSlots.push({
+              id: "slot-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
+              name: pName,
+            });
+          }
+        });
+      }
+
+      function syncPatunganWithDeposits() {
+        const sapiAnimal = appState.animals.find((a) => a.id === "sapi-1-7");
+        const sharePrice = Math.max(100000, Number(sapiAnimal?.targetPrice) || 3000000);
+
+        const totalsByPerson = new Map();
+        appState.deposits.forEach((d) => {
+          const pName = (d.person || "").trim();
+          if (!pName) return;
+          const key = pName.toLowerCase();
+          totalsByPerson.set(key, {
+            name: pName,
+            total: (totalsByPerson.get(key)?.total || 0) + (Number(d.amount) || 0),
+          });
+        });
+
+        if (!Array.isArray(appState.patungan) || appState.patungan.length === 0) {
+          appState.patungan = createDefaultPatungan(sharePrice);
+        }
+
+        const matchedKeys = new Set();
+        appState.patungan.forEach((slot) => {
+          slot.targetAmount = sharePrice;
+          const key = (slot.name || "").trim().toLowerCase();
+          if (totalsByPerson.has(key)) {
+            const pData = totalsByPerson.get(key);
+            slot.name = pData.name;
+            slot.paidAmount = pData.total;
+            slot.note = pData.total >= sharePrice ? "Lunas (otomatis dari setoran)" : "Nominal bertambah dari setoran";
+            matchedKeys.add(key);
+          } else {
+            slot.paidAmount = 0;
+            if (!slot.note || slot.note.includes("setoran") || slot.note.includes("Lunas")) {
+              slot.note = "Belum ada setoran";
+            }
+          }
+        });
+
+        totalsByPerson.forEach((pData, key) => {
+          if (!matchedKeys.has(key)) {
+            const openSlot = appState.patungan.find((s) => (s.name || "").startsWith("Slot Terbuka") && (Number(s.paidAmount) || 0) === 0);
+            if (openSlot) {
+              openSlot.name = pData.name;
+              openSlot.paidAmount = pData.total;
+              openSlot.note = pData.total >= sharePrice ? "Lunas (otomatis dari setoran)" : "Nominal bertambah dari setoran";
+            }
+          }
+        });
+      }
+
       function loadState() {
         try {
           const raw = localStorage.getItem(STORAGE_KEY);
           if (!raw) return createDemoState();
           const parsed = JSON.parse(raw);
-          if (!parsed || !Array.isArray(parsed.animals) || !Array.isArray(parsed.deposits)) return createDemoState();
-          if (!Array.isArray(parsed.patungan) || parsed.patungan.length === 0) parsed.patungan = createDefaultPatungan(3000000);
-          return parsed;
+          if (!parsed || !Array.isArray(parsed.deposits)) return createDemoState();
+
+          const animals = normalizeAnimals(parsed.animals);
+          const selectedAnimalId = animals.some((a) => a.id === parsed.selectedAnimalId) ? parsed.selectedAnimalId : "sapi-1-7";
+          const deposits = parsed.deposits.map((d, idx) => ({
+            id: d.id || `dep-${idx + 1}`,
+            person: (d.person || "Peserta Qurban").trim(),
+            amount: Math.max(0, Number(d.amount) || 0),
+            date: d.date || new Date().toISOString().split("T")[0],
+            method: d.method === "Autodebet / Gajian" ? "Transfer Bank (BSI)" : d.method || "Transfer Bank (BSI)",
+            note: d.note || "Setoran tabungan",
+          }));
+
+          const personSlots = Array.isArray(parsed.personSlots)
+            ? parsed.personSlots.map((s, idx) => ({
+                id: s.id || `slot-${idx + 1}`,
+                name: (s.name || `Peserta #${idx + 1}`).trim(),
+              }))
+            : [];
+
+          return {
+            targetDate: parsed.targetDate || "2027-05-17",
+            selectedAnimalId,
+            currentQuoteIndex: Number(parsed.currentQuoteIndex) || 0,
+            animals,
+            personSlots,
+            deposits,
+            patungan: Array.isArray(parsed.patungan) && parsed.patungan.length > 0 ? parsed.patungan : createDefaultPatungan(3000000),
+          };
         } catch (err) {
           return createDemoState();
         }
@@ -1174,37 +1339,63 @@
             return `
               <div
                 onclick="selectAnimal('${animal.id}')"
-                class="snap-center shrink-0 w-[80vw] sm:w-auto cursor-pointer rounded-2xl p-4 transition-all border-2 ${
+                class="snap-center shrink-0 w-[85vw] sm:w-auto cursor-pointer rounded-2xl p-4 sm:p-5 transition-all border-2 ${
                   isSelected ? "bg-white border-emerald-600 shadow-md ring-2 ring-emerald-500/20" : "bg-white border-slate-200 hover:border-emerald-300"
                 }"
               >
-                <div class="flex items-start justify-between gap-2 mb-2.5">
-                  <div class="flex items-center gap-2">
-                    <div class="w-9 h-9 rounded-xl flex items-center justify-center text-base ${
+                <div class="flex items-start justify-between gap-2 mb-3">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${
                       isSelected ? "bg-emerald-700 text-gold-400" : "bg-emerald-50 text-emerald-700"
                     }">
                       <i class="fa-solid ${animal.icon}"></i>
                     </div>
                     <div>
-                      <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                      <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                         isSelected ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-600"
                       }">${escapeHTML(animal.badge)}</span>
-                      <h3 class="font-bold text-xs sm:text-sm text-slate-900 mt-0.5">${escapeHTML(animal.name)}</h3>
+                      <h3 class="font-bold text-sm sm:text-base text-slate-900 mt-0.5">${escapeHTML(animal.name)}</h3>
                     </div>
                   </div>
-                  ${isSelected ? `<span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] shrink-0"><i class="fa-solid fa-check"></i></span>` : `<span class="w-5 h-5 rounded-full border border-slate-300 shrink-0"></span>`}
+                  ${isSelected ? `<span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-check"></i></span>` : `<span class="w-6 h-6 rounded-full border border-slate-300 shrink-0"></span>`}
                 </div>
 
-                <p class="text-[11px] text-slate-500 mb-2.5 leading-snug">${escapeHTML(animal.subtitle)}</p>
+                <p class="text-xs text-slate-500 mb-3 leading-snug">${escapeHTML(animal.subtitle)}</p>
 
-                <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
-                  <span class="text-[10px] font-medium text-slate-500">Estimasi</span>
+                <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2" onclick="event.stopPropagation()">
+                  <label class="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+                    <span>Nominal (Rp):</span>
+                    <input
+                      type="number"
+                      min="100000"
+                      step="50000"
+                      value="${animal.targetPrice}"
+                      onchange="updateAnimalNominal('${animal.id}', this.value)"
+                      class="w-28 sm:w-32 px-2.5 py-1 rounded-lg border border-slate-300 text-xs sm:text-sm font-extrabold text-emerald-800 bg-emerald-50/40 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </label>
                   <span class="text-xs sm:text-sm font-extrabold text-emerald-800">${formatRupiah(animal.targetPrice)}</span>
                 </div>
               </div>
             `;
           })
           .join("");
+      }
+
+      function updateAnimalNominal(id, newValue) {
+        const parsed = Number(newValue);
+        if (!parsed || parsed < 100000) {
+          showToast("Nominal minimal Rp 100.000.", "error");
+          renderAnimalCards();
+          return;
+        }
+        const targetAnimal = appState.animals.find((a) => a.id === id);
+        if (!targetAnimal) return;
+        targetAnimal.targetPrice = Math.round(parsed);
+        syncPatunganWithDeposits();
+        saveState();
+        renderAll();
+        showToast(`Nominal ${targetAnimal.name} diubah menjadi ${formatRupiah(targetAnimal.targetPrice)}`, "success");
       }
 
       function selectAnimal(id) {
@@ -1231,6 +1422,7 @@
         }
         const animal = getActiveAnimal();
         animal.targetPrice = Math.round(newPrice);
+        syncPatunganWithDeposits();
         saveState();
         renderAll();
         showToast(`Target ${animal.name} diperbarui ke ${formatRupiah(animal.targetPrice)}`, "success");
@@ -1284,8 +1476,8 @@
       }
 
       function focusDepositInput() {
-        const input = document.getElementById("deposit-amount");
-        if (input) setTimeout(() => input.focus(), 250);
+        const personInput = document.getElementById("deposit-person");
+        if (personInput) setTimeout(() => personInput.focus(), 250);
       }
 
       function setPresetAmount(val) {
@@ -1307,76 +1499,302 @@
         }
       }
 
-      document.getElementById("deposit-form").addEventListener("submit", function (e) {
-        e.preventDefault();
-        const amountInput = document.getElementById("deposit-amount");
-        const dateInput = document.getElementById("deposit-date");
-        const methodInput = document.getElementById("deposit-method");
-        const noteInput = document.getElementById("deposit-note");
-
-        const amount = Number(amountInput.value);
-        const date = dateInput.value;
-        const method = methodInput.value;
-        const note = noteInput.value.trim();
-
-        if (!amount || amount < 1000 || !date) {
-          showToast("Isi nominal dan tanggal dengan benar.", "error");
-          return;
-        }
-
-        appState.deposits.push({
-          id: "dep-" + Date.now(),
-          amount: Math.round(amount),
-          date,
-          method,
-          note: note || method,
+      function getUniquePeopleNames() {
+        const map = new Map();
+        (appState.personSlots || []).forEach((s) => {
+          const name = (s.name || "").trim();
+          if (name && !map.has(name.toLowerCase())) map.set(name.toLowerCase(), name);
         });
+        appState.deposits.forEach((d) => {
+          const name = (d.person || "").trim();
+          if (name && !map.has(name.toLowerCase())) map.set(name.toLowerCase(), name);
+        });
+        return Array.from(map.values());
+      }
 
-        saveState();
-        amountInput.value = "";
-        noteInput.value = "";
-        renderAll();
-        showToast(`Setoran ${formatRupiah(amount)} tersimpan!`, "success");
-      });
+      function renderPersonSelectors() {
+        const names = getUniquePeopleNames();
+        const filterSelect = document.getElementById("deposit-person-filter");
+        if (filterSelect) {
+          const prev = filterSelect.value;
+          filterSelect.innerHTML = `<option value="">Semua Orang</option>` + names.map((n) => `<option value="${escapeHTML(n)}">${escapeHTML(n)}</option>`).join("");
+          if (names.includes(prev)) filterSelect.value = prev;
+        }
+      }
 
       function renderDeposits() {
         const tbody = document.getElementById("deposits-table-body");
-        const searchEl = document.getElementById("deposit-search");
-        const badgeEl = document.getElementById("chart-summary-badge");
         if (!tbody) return;
 
-        const query = (searchEl ? searchEl.value : "").toLowerCase().trim();
-        const sorted = [...appState.deposits].sort((a, b) => b.date.localeCompare(a.date));
-        const filtered = query ? sorted.filter((d) => (d.note || "").toLowerCase().includes(query) || (d.method || "").toLowerCase().includes(query) || String(d.amount).includes(query)) : sorted;
+        const filterPerson = (document.getElementById("deposit-person-filter")?.value || "").trim().toLowerCase();
+        const searchQuery = (document.getElementById("deposit-search")?.value || "").trim().toLowerCase();
 
-        if (badgeEl) badgeEl.textContent = `${appState.deposits.length} Transaksi`;
+        let filtered = [...appState.deposits].sort((a, b) => b.date.localeCompare(a.date));
+
+        if (filterPerson) {
+          filtered = filtered.filter((d) => (d.person || "").trim().toLowerCase() === filterPerson);
+        }
+
+        if (searchQuery) {
+          filtered = filtered.filter(
+            (d) =>
+              (d.person || "").toLowerCase().includes(searchQuery) ||
+              (d.note || "").toLowerCase().includes(searchQuery) ||
+              (d.method || "").toLowerCase().includes(searchQuery)
+          );
+        }
+
+        const summaryBadge = document.getElementById("chart-summary-badge");
+        if (summaryBadge) {
+          summaryBadge.textContent = `${filtered.length} Transaksi`;
+        }
 
         if (filtered.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-slate-400 text-xs">Belum ada riwayat setoran.</td></tr>`;
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="py-6 text-center text-slate-400 font-medium text-xs">
+                Belum ada transaksi setoran yang dicatat.
+              </td>
+            </tr>
+          `;
           return;
         }
 
         tbody.innerHTML = filtered
           .map((dep) => `
-            <tr class="hover:bg-emerald-50/40 transition">
-              <td class="py-2 px-2 whitespace-nowrap text-xs font-semibold text-slate-600">${formatDateID(dep.date)}</td>
-              <td class="py-2 px-2">
-                <p class="font-bold text-slate-800 text-xs">${escapeHTML(dep.note)}</p>
-                <span class="inline-block text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">${escapeHTML(dep.method)}</span>
+            <tr class="hover:bg-slate-50/80 transition">
+              <td class="py-2.5 px-2 font-semibold text-slate-700 whitespace-nowrap">${formatDateID(dep.date)}</td>
+              <td class="py-2.5 px-2 font-bold text-slate-900 whitespace-nowrap">
+                <span class="inline-flex items-center gap-1.5">
+                  <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold flex items-center justify-center shrink-0">
+                    ${escapeHTML((dep.person || "P").charAt(0).toUpperCase())}
+                  </span>
+                  ${escapeHTML(dep.person)}
+                </span>
               </td>
-              <td class="py-2 px-2 text-right whitespace-nowrap font-extrabold text-emerald-700 text-xs">+${formatRupiah(dep.amount)}</td>
-              <td class="py-2 px-2 text-center whitespace-nowrap no-print">
-                <button type="button" onclick="openEditDepositModal('${dep.id}')" class="p-1 text-slate-500 hover:text-emerald-700"><i class="fa-solid fa-pen"></i></button>
-                <button type="button" onclick="confirmDeleteDeposit('${dep.id}')" class="p-1 text-slate-500 hover:text-rose-600"><i class="fa-solid fa-trash"></i></button>
+              <td class="py-2.5 px-2 text-slate-600">
+                <span class="font-medium text-slate-800 block">${escapeHTML(dep.note || "-")}</span>
+                <span class="text-[10px] text-slate-400 block">${escapeHTML(dep.method || "Transfer BSI")}</span>
+              </td>
+              <td class="py-2.5 px-2 text-right font-extrabold text-emerald-700 whitespace-nowrap">+${formatRupiah(dep.amount)}</td>
+              <td class="py-2.5 px-2 text-center whitespace-nowrap no-print">
+                <div class="flex items-center justify-center gap-1">
+                  <button type="button" onclick="openEditDepositModal('${dep.id}')" class="p-1 rounded-lg text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition" title="Edit Transaksi">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button type="button" onclick="confirmDeleteDeposit('${dep.id}')" class="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition" title="Hapus Transaksi">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </div>
               </td>
             </tr>
-          `).join("");
+          `)
+          .join("");
+      }
+
+      function addPersonSlot() {
+        const idx = (appState.personSlots || []).length + 1;
+        const newName = `Peserta Baru #${idx}`;
+        appState.personSlots.push({
+          id: "slot-" + Date.now() + "-" + Math.random().toString(36).slice(2, 5),
+          name: newName,
+        });
+        saveState();
+        renderPersonSelectors();
+        renderPerPersonHistory();
+        showToast(`Slot orang "${newName}" ditambahkan. Ubah nama atau langsung isi nominal setoran.`, "info");
+      }
+
+      function updatePersonSlotName(slotId, newName) {
+        const slot = (appState.personSlots || []).find((s) => s.id === slotId);
+        if (!slot) return;
+        const oldName = (slot.name || "").trim();
+        const cleaned = newName.trim() || "Peserta Qurban";
+        slot.name = cleaned;
+
+        if (oldName && oldName.toLowerCase() !== cleaned.toLowerCase()) {
+          appState.deposits.forEach((d) => {
+            if ((d.person || "").trim().toLowerCase() === oldName.toLowerCase()) {
+              d.person = cleaned;
+            }
+          });
+        }
+
+        syncPatunganWithDeposits();
+        saveState();
+        renderAll();
+        showToast(`Nama slot diperbarui menjadi ${cleaned}`, "success");
+      }
+
+      function deletePersonSlot(slotId) {
+        const slot = (appState.personSlots || []).find((s) => s.id === slotId);
+        if (!slot) return;
+        const targetName = (slot.name || "").trim();
+
+        showConfirmModal({
+          title: "Hapus Slot Orang",
+          message: `Hapus slot "${targetName}" beserta seluruh riwayat transaksinya?`,
+          okText: "Hapus Slot",
+          onConfirm: () => {
+            appState.personSlots = (appState.personSlots || []).filter((s) => s.id !== slotId);
+            if (targetName) {
+              appState.deposits = appState.deposits.filter((d) => (d.person || "").trim().toLowerCase() !== targetName.toLowerCase());
+            }
+            syncPatunganWithDeposits();
+            saveState();
+            renderAll();
+            showToast(`Slot "${targetName}" dihapus.`, "info");
+          },
+        });
+      }
+
+      function addQuickPersonDeposit(slotId) {
+        const slot = (appState.personSlots || []).find((s) => s.id === slotId);
+        if (!slot) return;
+        const amtInput = document.getElementById(`quick-person-amt-${slotId}`);
+        const noteInput = document.getElementById(`quick-person-note-${slotId}`);
+        const amount = Number(amtInput ? amtInput.value : 0);
+        const note = noteInput ? noteInput.value.trim() : "";
+
+        if (!amount || amount < 1000) {
+          showToast("Masukkan nominal setoran minimal Rp 1.000.", "error");
+          if (amtInput) amtInput.focus();
+          return;
+        }
+
+        const todayStr = new Date().toISOString().split("T")[0];
+        appState.deposits.push({
+          id: "dep-" + Date.now() + "-" + Math.random().toString(36).slice(2, 5),
+          person: slot.name,
+          amount: Math.round(amount),
+          date: todayStr,
+          method: "Transfer Bank (BSI)",
+          note: note || `Setoran ${slot.name}`,
+        });
+
+        syncPatunganWithDeposits();
+        saveState();
+        renderAll();
+        showToast(`Nominal ${slot.name} bertambah +${formatRupiah(amount)}!`, "success");
+      }
+
+      function renderPerPersonHistory() {
+        const container = document.getElementById("per-person-history-container");
+        const countBadge = document.getElementById("person-summary-count");
+        if (!container) return;
+
+        ensurePersonSlotsSynced();
+
+        const depositsByPerson = new Map();
+        const sortedDeposits = [...appState.deposits].sort((a, b) => b.date.localeCompare(a.date));
+
+        sortedDeposits.forEach((dep) => {
+          const name = (dep.person || "Peserta Qurban").trim();
+          const key = name.toLowerCase();
+          if (!depositsByPerson.has(key)) {
+            depositsByPerson.set(key, { total: 0, items: [] });
+          }
+          const bucket = depositsByPerson.get(key);
+          bucket.total += Number(dep.amount) || 0;
+          bucket.items.push(dep);
+        });
+
+        const slots = appState.personSlots || [];
+        if (countBadge) countBadge.textContent = `${slots.length} Orang`;
+
+        if (slots.length === 0) {
+          container.innerHTML = `<div class="col-span-full py-6 text-center text-xs text-slate-400">Belum ada slot orang. Klik "Tambah Slot Orang" atau isi setoran baru.</div>`;
+          return;
+        }
+
+        const activeTarget = Math.max(1, Number(getActiveAnimal()?.targetPrice) || 3000000);
+
+        container.innerHTML = slots
+          .map((slot) => {
+            const key = (slot.name || "").trim().toLowerCase();
+            const bucket = depositsByPerson.get(key) || { total: 0, items: [] };
+            const pct = Math.min(100, Math.round((bucket.total / activeTarget) * 100));
+
+            const txRows =
+              bucket.items.length > 0
+                ? bucket.items
+                    .map(
+                      (tx) => `
+                        <div class="flex items-center justify-between gap-2 text-[11px] py-1.5 border-b border-slate-100 last:border-b-0">
+                          <div class="min-w-0">
+                            <p class="font-semibold text-slate-700 truncate">${escapeHTML(tx.note)}</p>
+                            <span class="text-[10px] text-slate-400">${formatDateID(tx.date)} • ${escapeHTML(tx.method)}</span>
+                          </div>
+                          <div class="flex items-center gap-1.5 shrink-0">
+                            <span class="font-extrabold text-emerald-700">+${formatRupiah(tx.amount)}</span>
+                            <button type="button" onclick="confirmDeleteDeposit('${tx.id}')" class="text-slate-400 hover:text-rose-600 p-0.5 no-print" title="Hapus transaksi">
+                              <i class="fa-solid fa-xmark"></i>
+                            </button>
+                          </div>
+                        </div>
+                      `
+                    )
+                    .join("")
+                : `<p class="text-[11px] text-slate-400 py-2 text-center">Belum ada transaksi setoran untuk slot ini.</p>`;
+
+            return `
+              <div class="rounded-2xl border border-slate-200 bg-slate-50/60 p-3.5 flex flex-col justify-between gap-2.5">
+                <div>
+                  <div class="flex items-start justify-between gap-2 mb-2">
+                    <div class="flex items-center gap-2 min-w-0 flex-1">
+                      <div class="w-8 h-8 rounded-xl bg-emerald-700 text-gold-400 flex items-center justify-center text-xs font-extrabold shrink-0">
+                        ${escapeHTML((slot.name || "P").charAt(0).toUpperCase())}
+                      </div>
+                      <div class="min-w-0 flex-1">
+                        <input
+                          type="text"
+                          value="${escapeHTML(slot.name)}"
+                          onchange="updatePersonSlotName('${slot.id}', this.value)"
+                          aria-label="Nama slot orang"
+                          class="w-full font-bold text-xs sm:text-sm text-slate-900 bg-white/80 hover:bg-white focus:bg-white border border-transparent hover:border-slate-200 focus:border-emerald-500 rounded-lg px-1.5 py-0.5 focus:outline-none truncate"
+                        />
+                        <span class="text-[10px] font-semibold text-slate-500 px-1.5">${bucket.items.length} transaksi</span>
+                      </div>
+                    </div>
+                    <div class="flex items-start gap-2 shrink-0">
+                      <div class="text-right">
+                        <span class="block text-xs sm:text-sm font-extrabold text-emerald-800">${formatRupiah(bucket.total)}</span>
+                        <span class="text-[10px] font-bold text-gold-700">${pct}% target</span>
+                      </div>
+                      <button type="button" onclick="deletePersonSlot('${slot.id}')" class="min-h-[30px] px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-[10px] font-bold transition no-print" title="Hapus Slot Orang">
+                        <i class="fa-solid fa-trash-can"></i> Hapus
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-emerald-600 to-gold-500 rounded-full" style="width: ${pct}%"></div>
+                  </div>
+                </div>
+
+                <!-- Form Setor Langsung di Slot Orang -->
+                <div class="flex items-center gap-1.5 no-print">
+                  <input type="number" id="quick-person-amt-${slot.id}" min="1000" step="1000" placeholder="Nominal (Rp)" class="w-28 px-2 py-1.5 rounded-lg border border-slate-300 bg-white text-[11px] font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                  <input type="text" id="quick-person-note-${slot.id}" placeholder="Catatan..." class="flex-1 min-w-0 px-2 py-1.5 rounded-lg border border-slate-300 bg-white text-[11px] text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                  <button type="button" onclick="addQuickPersonDeposit('${slot.id}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold transition shrink-0">
+                    + Setor
+                  </button>
+                </div>
+
+                <div class="bg-white rounded-xl p-2.5 border border-slate-100 max-h-36 overflow-y-auto">
+                  ${txRows}
+                </div>
+              </div>
+            `;
+          })
+          .join("");
       }
 
       function openEditDepositModal(id) {
         const dep = appState.deposits.find((d) => d.id === id);
         if (!dep) return;
         document.getElementById("edit-deposit-id").value = dep.id;
+        document.getElementById("edit-deposit-person").value = dep.person || "";
         document.getElementById("edit-deposit-amount").value = dep.amount;
         document.getElementById("edit-deposit-date").value = dep.date;
         document.getElementById("edit-deposit-method").value = dep.method || "Transfer Bank (BSI)";
@@ -1396,19 +1814,68 @@
       document.getElementById("edit-deposit-form").addEventListener("submit", function (e) {
         e.preventDefault();
         const id = document.getElementById("edit-deposit-id").value;
+        const person = document.getElementById("edit-deposit-person").value.trim();
         const amount = Number(document.getElementById("edit-deposit-amount").value);
         const date = document.getElementById("edit-deposit-date").value;
         const method = document.getElementById("edit-deposit-method").value;
         const note = document.getElementById("edit-deposit-note").value.trim();
 
         const idx = appState.deposits.findIndex((d) => d.id === id);
-        if (idx !== -1 && amount >= 1000 && date) {
-          appState.deposits[idx] = { id, amount: Math.round(amount), date, method, note: note || method };
+        if (idx !== -1 && person && amount >= 1000 && date) {
+          appState.deposits[idx] = { id, person, amount: Math.round(amount), date, method, note: note || method };
+          syncPatunganWithDeposits();
           saveState();
           closeEditDepositModal();
           renderAll();
-          showToast("Setoran berhasil diperbarui.", "success");
+          showToast(`Transaksi ${person} berhasil diperbarui.`, "success");
+        } else {
+          showToast("Nama penyetor, nominal, dan tanggal wajib diisi.", "error");
         }
+      });
+
+      document.getElementById("deposit-form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        const personInput = document.getElementById("deposit-person");
+        const amountInput = document.getElementById("deposit-amount");
+        const dateInput = document.getElementById("deposit-date");
+        const methodInput = document.getElementById("deposit-method");
+        const noteInput = document.getElementById("deposit-note");
+
+        const person = (personInput?.value || "").trim();
+        const amount = Number(amountInput?.value);
+        const date = dateInput?.value || new Date().toISOString().split("T")[0];
+        const method = methodInput?.value || "Transfer Bank (BSI)";
+        const note = (noteInput?.value || "").trim();
+
+        if (!person) {
+          showToast("Nama orang / penyetor wajib diisi.", "error");
+          if (personInput) personInput.focus();
+          return;
+        }
+
+        if (!amount || amount < 1000) {
+          showToast("Nominal setoran minimal Rp 1.000.", "error");
+          if (amountInput) amountInput.focus();
+          return;
+        }
+
+        appState.deposits.push({
+          id: "dep-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
+          person,
+          amount: Math.round(amount),
+          date,
+          method,
+          note: note || `Setoran ${person}`,
+        });
+
+        ensurePersonSlotsSynced();
+        syncPatunganWithDeposits();
+        saveState();
+        renderAll();
+
+        if (amountInput) amountInput.value = "";
+        if (noteInput) noteInput.value = "";
+        showToast(`Setoran ${formatRupiah(amount)} atas nama ${person} berhasil disimpan!`, "success");
       });
 
       function confirmDeleteDeposit(id) {
@@ -1416,13 +1883,14 @@
         if (!dep) return;
         showConfirmModal({
           title: "Hapus Setoran",
-          message: `Hapus setoran ${formatRupiah(dep.amount)}?`,
+          message: `Hapus setoran ${formatRupiah(dep.amount)} atas nama ${dep.person}?`,
           okText: "Hapus",
           onConfirm: () => {
             appState.deposits = appState.deposits.filter((d) => d.id !== id);
+            syncPatunganWithDeposits();
             saveState();
             renderAll();
-            showToast("Setoran dihapus.", "info");
+            showToast("Setoran dihapus & riwayat orang diperbarui.", "info");
           },
         });
       }
@@ -1431,10 +1899,11 @@
         if (appState.deposits.length === 0) return;
         showConfirmModal({
           title: "Reset Semua Setoran",
-          message: "Hapus seluruh riwayat setoran?",
+          message: "Hapus seluruh riwayat transaksi semua orang?",
           okText: "Hapus Semua",
           onConfirm: () => {
             appState.deposits = [];
+            syncPatunganWithDeposits();
             saveState();
             renderAll();
             showToast("Riwayat setoran dibersihkan.", "info");
@@ -1456,7 +1925,7 @@
 
         sorted.forEach((dep) => {
           runningTotal += Number(dep.amount) || 0;
-          labels.push(formatDateID(dep.date));
+          labels.push(`${formatDateID(dep.date)} (${dep.person || "Peserta"})`);
           cumulativeData.push(runningTotal);
         });
 
@@ -1506,19 +1975,27 @@
         const grid = document.getElementById("patungan-slots-grid");
         if (!grid) return;
 
+        const sapiAnimal = appState.animals.find((a) => a.id === "sapi-1-7");
+        const sharePrice = Math.max(100000, Number(sapiAnimal?.targetPrice) || 3000000);
         const members = appState.patungan || [];
         const totalCollected = members.reduce((sum, m) => sum + (Number(m.paidAmount) || 0), 0);
-        const totalTarget = members.reduce((sum, m) => sum + (Number(m.targetAmount) || 3000000), 0);
+        const totalSlots = members.length;
+        const cowCount = Math.max(1, Math.ceil(totalSlots / 7));
+        const totalTarget = sharePrice * totalSlots;
         const remaining = Math.max(0, totalTarget - totalCollected);
         const pct = totalTarget > 0 ? Math.min(100, Math.round((totalCollected / totalTarget) * 100)) : 0;
-        const paidFullCount = members.filter((m) => (Number(m.paidAmount) || 0) >= (Number(m.targetAmount) || 3000000)).length;
+        const paidFullCount = members.filter((m) => (Number(m.paidAmount) || 0) >= sharePrice).length;
 
-        const sampleShare = members[0]?.targetAmount || 3000000;
-        document.getElementById("patungan-full-cow-target").textContent = formatRupiah(totalTarget || sampleShare * 7);
-        document.getElementById("patungan-per-share-target").textContent = formatRupiah(sampleShare);
+        const cowCountLabel = document.getElementById("patungan-cow-count-label");
+        const totalSlotsLabel = document.getElementById("patungan-total-slots-label");
+        if (cowCountLabel) cowCountLabel.textContent = `${cowCount} Ekor`;
+        if (totalSlotsLabel) totalSlotsLabel.textContent = `${totalSlots} Slot`;
+
+        document.getElementById("patungan-full-cow-target").textContent = formatRupiah(totalTarget);
+        document.getElementById("patungan-per-share-target").textContent = formatRupiah(sharePrice);
         document.getElementById("patungan-total-collected").textContent = formatRupiah(totalCollected);
-        document.getElementById("patungan-pct-label").textContent = `${pct}% dari sapi`;
-        document.getElementById("patungan-slot-summary").textContent = `${paidFullCount} / 7 Slot`;
+        document.getElementById("patungan-pct-label").textContent = `${pct}% dari target`;
+        document.getElementById("patungan-slot-summary").textContent = `${paidFullCount} / ${totalSlots} Slot`;
         document.getElementById("patungan-paid-count").textContent = `${paidFullCount} lunas`;
         document.getElementById("patungan-remaining").textContent = formatRupiah(remaining);
         document.getElementById("patungan-bar-pct").textContent = `${pct}%`;
@@ -1527,9 +2004,11 @@
         grid.innerHTML = members
           .map((m, idx) => {
             const paid = Math.max(0, Number(m.paidAmount) || 0);
-            const target = Math.max(1, Number(m.targetAmount) || 3000000);
+            const target = sharePrice;
             const mPct = Math.min(100, Math.round((paid / target) * 100));
             const isLunas = paid >= target;
+            const cowNumber = Math.floor(idx / 7) + 1;
+            const bagianNumber = (idx % 7) + 1;
 
             return `
               <div class="snap-center shrink-0 w-[75vw] sm:w-auto rounded-2xl border p-3.5 flex flex-col justify-between ${
@@ -1537,30 +2016,40 @@
               }">
                 <div>
                   <div class="flex items-center justify-between gap-1 mb-1">
-                    <span class="text-[9px] font-bold text-slate-500 uppercase">Bagian #${idx + 1}</span>
-                    <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${isLunas ? "bg-emerald-600 text-white" : "bg-gold-100 text-gold-700"}">${isLunas ? "LUNAS" : "MENYICIL"}</span>
+                    <span class="text-[9px] font-bold text-slate-500 uppercase">Sapi #${cowNumber} • Bagian ${bagianNumber}/7</span>
+                    <div class="flex items-center gap-1">
+                      <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${isLunas ? "bg-emerald-600 text-white" : "bg-gold-100 text-gold-700"}">${isLunas ? "LUNAS" : "MENYETOR"}</span>
+                      <button type="button" onclick="deletePatunganSlot(${m.id})" class="text-slate-400 hover:text-rose-600 p-0.5 no-print" title="Hapus Slot Patungan">
+                        <i class="fa-solid fa-trash-can text-[10px]"></i>
+                      </button>
+                    </div>
                   </div>
                   <input
                     type="text"
                     value="${escapeHTML(m.name)}"
-                    onchange="updatePatunganMember(${m.id}, 'name', this.value)"
+                    onchange="updatePatunganMemberName(${m.id}, this.value)"
                     class="w-full font-bold text-xs text-slate-900 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-emerald-600 focus:outline-none py-0.5"
                   />
                   <p class="text-[10px] text-slate-500 truncate mt-0.5">${escapeHTML(m.note || "")}</p>
                 </div>
-
-                <div class="space-y-1.5 pt-2 border-t border-slate-100 mt-2">
+                
+                <div class="my-2 space-y-1">
                   <div class="flex justify-between text-[11px] font-bold">
                     <span class="text-emerald-800">${formatRupiah(paid)}</span>
-                    <span class="text-slate-400">/ ${formatRupiah(target)}</span>
+                    <span class="text-slate-500">${mPct}%</span>
                   </div>
                   <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                    <div class="h-full rounded-full ${isLunas ? "bg-emerald-600" : "bg-gold-500"}" style="width: ${mPct}%"></div>
+                    <div class="h-full bg-emerald-600 rounded-full" style="width: ${mPct}%"></div>
                   </div>
-                  <div class="flex items-center gap-1 pt-1 no-print">
-                    <button type="button" onclick="addPatunganDeposit(${m.id}, 250000)" class="flex-1 py-1 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-200">+250rb</button>
-                    <button type="button" onclick="markPatunganLunas(${m.id})" class="flex-1 py-1 rounded bg-gold-50 hover:bg-gold-100 text-gold-800 text-[10px] font-bold border border-gold-200">Pelunasan</button>
-                  </div>
+                </div>
+
+                <div class="flex items-center gap-1 mt-1 no-print">
+                  <button type="button" onclick="recordPatunganDeposit(${m.id}, 100000)" class="flex-1 py-1 rounded bg-slate-100 hover:bg-emerald-50 text-[10px] font-bold text-slate-700 hover:text-emerald-800 border border-slate-200 transition">
+                    +100rb
+                  </button>
+                  <button type="button" onclick="recordPatunganPelunasan(${m.id})" class="flex-1 py-1 rounded bg-emerald-700 hover:bg-emerald-800 text-[10px] font-bold text-white transition">
+                    Pelunasan
+                  </button>
                 </div>
               </div>
             `;
@@ -1568,61 +2057,108 @@
           .join("");
       }
 
-      function updatePatunganMember(id, field, value) {
-        const member = appState.patungan.find((m) => m.id === id);
+      function deletePatunganSlot(id) {
+        const member = (appState.patungan || []).find((m) => m.id === id);
         if (!member) return;
-        member[field] = value;
-        saveState();
-        renderPatungan();
+        showConfirmModal({
+          title: "Hapus Slot Patungan",
+          message: `Hapus slot patungan "${member.name}" dari daftar Sapi 1/7?`,
+          okText: "Hapus Slot",
+          onConfirm: () => {
+            appState.patungan = (appState.patungan || []).filter((m) => m.id !== id);
+            syncPatunganWithDeposits();
+            saveState();
+            renderAll();
+            showToast(`Slot patungan "${member.name}" dihapus.`, "info");
+          },
+        });
       }
 
-      function addPatunganDeposit(id, amount) {
+      function updatePatunganMemberName(id, value) {
         const member = appState.patungan.find((m) => m.id === id);
         if (!member) return;
-        member.paidAmount = Math.min(Number(member.targetAmount) || 3000000, (Number(member.paidAmount) || 0) + amount);
-        member.note = `Cicilan +${formatRupiah(amount)}`;
+        const cleanName = value.trim() || `Peserta #${id}`;
+        member.name = cleanName;
+        syncPatunganWithDeposits();
         saveState();
-        renderPatungan();
-        showToast(`Setoran ${member.name} bertambah ${formatRupiah(amount)}`, "success");
+        renderAll();
       }
 
-      function markPatunganLunas(id) {
+      function recordPatunganDeposit(id, amount) {
         const member = appState.patungan.find((m) => m.id === id);
         if (!member) return;
-        member.paidAmount = Number(member.targetAmount) || 3000000;
-        member.note = "Lunas 100%";
+        const todayStr = new Date().toISOString().split("T")[0];
+        appState.deposits.push({
+          id: "dep-" + Date.now(),
+          person: member.name,
+          amount: Math.round(amount),
+          date: todayStr,
+          method: "Transfer Bank (BSI)",
+          note: `Setoran patungan Sapi 1/7 (${member.name})`,
+        });
+        syncPatunganWithDeposits();
         saveState();
-        renderPatungan();
-        showToast(`${member.name} LUNAS!`, "success");
+        renderAll();
+        showToast(`Setoran ${formatRupiah(amount)} untuk ${member.name} tercatat & riwayat diperbarui!`, "success");
+      }
+
+      function recordPatunganPelunasan(id) {
+        const member = appState.patungan.find((m) => m.id === id);
+        if (!member) return;
+        const sapiAnimal = appState.animals.find((a) => a.id === "sapi-1-7");
+        const sharePrice = Math.max(100000, Number(sapiAnimal?.targetPrice) || 3000000);
+        const sisa = Math.max(0, sharePrice - (Number(member.paidAmount) || 0));
+        if (sisa <= 0) {
+          showToast(`${member.name} sudah lunas.`, "info");
+          return;
+        }
+        const todayStr = new Date().toISOString().split("T")[0];
+        appState.deposits.push({
+          id: "dep-" + Date.now(),
+          person: member.name,
+          amount: sisa,
+          date: todayStr,
+          method: "Transfer Bank (BSI)",
+          note: `Pelunasan patungan Sapi 1/7 (${member.name})`,
+        });
+        syncPatunganWithDeposits();
+        saveState();
+        renderAll();
+        showToast(`${member.name} LUNAS (+${formatRupiah(sisa)}) & riwayat diperbarui!`, "success");
       }
 
       function addPatunganMember() {
-        if (appState.patungan.length >= 7) {
-          showToast("Maksimal 7 slot peserta sapi.", "info");
-          return;
-        }
-        const sharePrice = appState.patungan[0]?.targetAmount || 3000000;
+        const sapiAnimal = appState.animals.find((a) => a.id === "sapi-1-7");
+        const sharePrice = Math.max(100000, Number(sapiAnimal?.targetPrice) || 3000000);
+        const nextIdx = appState.patungan.length;
+        const cowNum = Math.floor(nextIdx / 7) + 1;
+        const partNum = (nextIdx % 7) + 1;
         appState.patungan.push({
-          id: Date.now(),
-          name: `Peserta #${appState.patungan.length + 1}`,
+          id: Date.now() + Math.floor(Math.random() * 1000),
+          name: `Peserta Sapi #${cowNum} (${partNum}/7)`,
           paidAmount: 0,
           targetAmount: sharePrice,
-          note: "Baru bergabung",
+          note: `Slot Sapi #${cowNum} bagian ke-${partNum}`,
         });
+        syncPatunganWithDeposits();
         saveState();
         renderPatungan();
-        showToast("Slot peserta ditambahkan.", "success");
+        renderPersonSelectors();
+        showToast(`Slot baru ditambahkan (Sapi #${cowNum} • Bagian ${partNum}/7).`, "success");
       }
 
       function confirmResetPatungan() {
         showConfirmModal({
           title: "Reset Grup Patungan",
-          message: "Kembalikan grup patungan ke data awal?",
+          message: "Kembalikan slot grup patungan ke data awal?",
           okText: "Reset",
           onConfirm: () => {
-            appState.patungan = createDefaultPatungan(3000000);
+            const sapiAnimal = appState.animals.find((a) => a.id === "sapi-1-7");
+            const sharePrice = Math.max(100000, Number(sapiAnimal?.targetPrice) || 3000000);
+            appState.patungan = createDefaultPatungan(sharePrice);
+            syncPatunganWithDeposits();
             saveState();
-            renderPatungan();
+            renderAll();
             showToast("Grup patungan direset.", "info");
           },
         });
@@ -1633,6 +2169,104 @@
         setTimeout(() => window.print(), 300);
       }
 
+      /**
+       * Mendeteksi jenis perangkat (HP, Tablet, Laptop, PC) serta mereknya
+       * berdasarkan User-Agent, Client Hints, dan karakteristik layar/pointer.
+       */
+      async function detectDeviceProfile() {
+        const ua = navigator.userAgent || "";
+        const platform = navigator.platform || "";
+        const width = window.innerWidth || screen.width || 1280;
+        const maxTouch = navigator.maxTouchPoints || 0;
+        const isCoarsePointer = typeof window.matchMedia === "function" && window.matchMedia("(pointer: coarse)").matches;
+        const isTouchDevice = maxTouch > 0 || isCoarsePointer || "ontouchstart" in window;
+
+        let brand = "Umum";
+        if (/iPhone/i.test(ua)) {
+          brand = "Apple iPhone";
+        } else if (/iPad/i.test(ua) || (/Mac/i.test(ua) && maxTouch > 1)) {
+          brand = "Apple iPad";
+        } else if (/Macintosh|Mac OS X/i.test(ua)) {
+          brand = "Apple Mac";
+        } else if (/SM-|GT-|SCH-|SGH-|Galaxy/i.test(ua)) {
+          brand = "Samsung";
+        } else if (/POCO/i.test(ua)) {
+          brand = "Xiaomi POCO";
+        } else if (/Redmi/i.test(ua)) {
+          brand = "Xiaomi Redmi";
+        } else if (/Mi\s|Xiaomi/i.test(ua)) {
+          brand = "Xiaomi";
+        } else if (/CPH|OPPO/i.test(ua)) {
+          brand = "OPPO";
+        } else if (/vivo|V2\d{3}|PD\d{4}/i.test(ua)) {
+          brand = "Vivo";
+        } else if (/RMX|realme/i.test(ua)) {
+          brand = "Realme";
+        } else if (/HUAWEI|HONOR|ANE-|LIO-|TAS-|NOH-/i.test(ua)) {
+          brand = "Huawei";
+        } else if (/ASUS|ROG|ZenBook|VivoBook/i.test(ua)) {
+          brand = "ASUS";
+        } else if (/Lenovo|ThinkPad|IdeaPad|Legion/i.test(ua)) {
+          brand = "Lenovo";
+        } else if (/HP\s|Pavilion|EliteBook|ProBook|Victus|OMEN/i.test(ua)) {
+          brand = "HP";
+        } else if (/Dell|Latitude|Inspiron|XPS/i.test(ua)) {
+          brand = "Dell";
+        } else if (/Acer|Aspire|Predator|Swift/i.test(ua)) {
+          brand = "Acer";
+        } else if (/MSI/i.test(ua)) {
+          brand = "MSI";
+        } else if (/Android/i.test(ua)) {
+          brand = "Android";
+        } else if (/Windows/i.test(ua)) {
+          brand = "Windows";
+        } else if (/Linux/i.test(ua)) {
+          brand = "Linux";
+        }
+
+        if (navigator.userAgentData && typeof navigator.userAgentData.getHighEntropyValues === "function") {
+          try {
+            const hints = await navigator.userAgentData.getHighEntropyValues(["model", "platform"]);
+            const model = (hints.model || "").trim();
+            if (model) {
+              if (/^SM-|^Galaxy/i.test(model)) brand = `Samsung (${model})`;
+              else if (/POCO/i.test(model)) brand = `Xiaomi POCO (${model})`;
+              else if (/Redmi/i.test(model)) brand = `Xiaomi Redmi (${model})`;
+              else if (/CPH/i.test(model)) brand = `OPPO (${model})`;
+              else if (/RMX/i.test(model)) brand = `Realme (${model})`;
+              else brand = model;
+            }
+          } catch (_) {
+            // Abaikan jika browser membatasi high-entropy hints
+          }
+        }
+
+        let deviceType = "PC";
+        let iconClass = "fa-desktop";
+
+        if (/iPhone|Mobile|Android.*Mobile|Windows Phone/i.test(ua) || (isTouchDevice && width < 640)) {
+          deviceType = "HP";
+          iconClass = "fa-mobile-screen-button";
+        } else if (/iPad|Tablet|PlayBook|Silk/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua)) || (isTouchDevice && width >= 640 && width <= 1024)) {
+          deviceType = "Tablet";
+          iconClass = "fa-tablet-screen-button";
+        } else if (/MacBook|Laptop|Chromebook/i.test(ua) || (!isTouchDevice && width >= 1024 && width <= 1440) || (/Windows|Macintosh|Linux/i.test(ua || platform) && width < 1440)) {
+          deviceType = "Laptop";
+          iconClass = "fa-laptop";
+        } else {
+          deviceType = "PC";
+          iconClass = "fa-desktop";
+        }
+
+        document.body.setAttribute("data-device-type", deviceType);
+        document.body.setAttribute("data-device-brand", brand);
+
+        const badgeText = document.getElementById("device-profile-text");
+        const badgeIcon = document.getElementById("device-profile-icon");
+        if (badgeText) badgeText.textContent = `${deviceType} • ${brand}`;
+        if (badgeIcon) badgeIcon.className = `fa-solid ${iconClass} text-emerald-600`;
+      }
+
       function confirmResetDemo() {
         showConfirmModal({
           title: "Reset Demo",
@@ -1640,6 +2274,7 @@
           okText: "Reset Demo",
           onConfirm: () => {
             appState = createDemoState();
+            syncPatunganWithDeposits();
             saveState();
             renderAll();
             updateCountdown();
@@ -1649,11 +2284,15 @@
       }
 
       function renderAll() {
+        ensurePersonSlotsSynced();
+        syncPatunganWithDeposits();
         renderQuote();
         renderHeroAndSummary();
         renderAnimalCards();
         renderCalculator();
+        renderPersonSelectors();
         renderDeposits();
+        renderPerPersonHistory();
         renderPatungan();
         renderChart();
       }
@@ -1663,6 +2302,9 @@
         if (dateInput && !dateInput.value) {
           dateInput.value = new Date().toISOString().split("T")[0];
         }
+
+        detectDeviceProfile();
+        window.addEventListener("resize", detectDeviceProfile);
 
         renderAll();
         updateCountdown();
