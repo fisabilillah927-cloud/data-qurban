@@ -102,35 +102,6 @@
       }
 
       @media (max-width: 639px) {
-        html {
-          font-size: 16.5px;
-        }
-        body[data-device-type="HP"] {
-          font-size: 1rem;
-          line-height: 1.55;
-        }
-        body[data-device-type="HP"] .text-\[9px\],
-        body[data-device-type="HP"] .text-\[10px\] {
-          font-size: 0.75rem !important;
-          line-height: 1.35 !important;
-        }
-        body[data-device-type="HP"] .text-\[11px\],
-        body[data-device-type="HP"] .text-xs {
-          font-size: 0.875rem !important;
-          line-height: 1.45 !important;
-        }
-        body[data-device-type="HP"] .text-sm {
-          font-size: 0.96rem !important;
-          line-height: 1.5 !important;
-        }
-        body[data-device-type="HP"] h2 {
-          font-size: 1.35rem !important;
-          line-height: 1.3 !important;
-        }
-        body[data-device-type="HP"] h3 {
-          font-size: 1.05rem !important;
-          line-height: 1.35 !important;
-        }
         input, select, textarea {
           font-size: 16px !important;
         }
@@ -2011,15 +1982,10 @@
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: "bottom",
-                labels: { font: { size: window.innerWidth < 640 ? 12 : 10 } },
-              },
-            },
+            plugins: { legend: { position: "bottom", labels: { font: { size: 10 } } } },
             scales: {
-              y: { beginAtZero: true, ticks: { font: { size: window.innerWidth < 640 ? 11 : 9 } } },
-              x: { ticks: { font: { size: window.innerWidth < 640 ? 11 : 9 } } },
+              y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+              x: { ticks: { font: { size: 9 } } },
             },
           },
         });
