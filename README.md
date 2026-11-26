@@ -2,7 +2,7 @@
 <html lang="id" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=10.0, user-scalable=yes" />
     <title>QurbanKu - Perencana & Tracker Tabungan Qurban</title>
 
     <!-- Google Fonts: Plus Jakarta Sans (Modern UX) & Amiri (Kaligrafi Islami) -->
@@ -89,10 +89,8 @@
         touch-action: manipulation;
       }
 
-      /* Custom Smooth Scrollbar */
-      ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
+      html, body {
+        touch-action: auto pinch-zoom;
       }
       ::-webkit-scrollbar-track {
         background: #f1f5f9;
